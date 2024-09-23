@@ -7,9 +7,18 @@ import 'package:dashboard/presentation/widgets/task_card.dart';
 class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+   return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.list),
+            onPressed: () {
+              // Navigate to the Task List screen
+              Navigator.pushNamed(context, '/task_list');
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
@@ -35,6 +44,7 @@ class DashboardScreen extends StatelessWidget {
           }
           return Center(child: Text('No tasks to display.'));
         },
+        
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -42,6 +52,7 @@ class DashboardScreen extends StatelessWidget {
         },
         child: Icon(Icons.refresh),
       ),
+      
     );
   }
 }

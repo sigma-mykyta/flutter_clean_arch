@@ -34,6 +34,10 @@ dependencies:
     sdk: flutter
   dashboard:
     path: features/dashboard
+  common:
+    path: features/common
+  list:
+    path: features/list
 
 
   # The following adds the Cupertino Icons font to your application.

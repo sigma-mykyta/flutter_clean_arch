@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:dashboard/data/task_repository_impl.dart';
+import 'package:common/data/task_repository_impl.dart';
 import 'package:common/domain/entities/task.dart';
 import 'package:injectable/injectable.dart';
 
