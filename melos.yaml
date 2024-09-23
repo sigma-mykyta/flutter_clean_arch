@@ -1,0 +1,12 @@
+name: flutter_pro
+packages:
+  - features/**
+  - packages/**
+
+dev_dependencies:
+  flutter_bloc: ^8.0.1
+  provider: ^6.0.0
+
+scripts:
+  analyze:
+    exec: dart analyze .
