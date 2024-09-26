@@ -11,17 +11,17 @@ class TaskListProvider extends ChangeNotifier {
   String _selectedSortOption = 'Due Date';
 
   final TaskRepository taskRepository = GetIt.I<TaskRepository>();
-  
 
   List<Task> get filteredAndSortedTasks => _filteredAndSortedTasks;
   String get selectedFilter => _selectedFilter;
   String get selectedSortOption => _selectedSortOption;
 
-
   Future<void> fetchTasks() async {
-    _tasks = await taskRepository.fetchTasks();
-    _filteredAndSortedTasks = _tasks;
-    notifyListeners();
+    if (_tasks.isEmpty) {
+      _tasks = await taskRepository.fetchTasks();
+      _applyFilterAndSort();
+    }
+    return Future.value();
   }
 
   void setFilter(String filter) {
@@ -35,14 +35,12 @@ class TaskListProvider extends ChangeNotifier {
   }
 
   void _applyFilterAndSort() {
-    // Filtering
     _filteredAndSortedTasks = _tasks.where((task) {
       if (_selectedFilter == 'Completed') return task.isCompleted;
       if (_selectedFilter == 'Pending') return !task.isCompleted;
-      return true; // 'All'
+      return true;
     }).toList();
 
-    // Sorting
     if (_selectedSortOption == 'Due Date') {
       _filteredAndSortedTasks.sort((a, b) => a.dueDate.compareTo(b.dueDate));
     } else if (_selectedSortOption == 'Alphabetical') {
@@ -55,5 +53,4 @@ class TaskListProvider extends ChangeNotifier {
   List<Task> searchTasks(String query) {
     return _tasks.where((task) => task.title.toLowerCase().contains(query.toLowerCase())).toList();
   }
-
 }

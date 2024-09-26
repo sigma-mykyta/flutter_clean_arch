@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         ),
         // TaskListProvider now injects TaskRepository using GetIt internally
         ChangeNotifierProvider<TaskListProvider>(
-          create: (context) => TaskListProvider(),  // No need to pass TaskRepository
+          create: (context) => TaskListProvider(), 
         ),
       ],
       child: MaterialApp(
