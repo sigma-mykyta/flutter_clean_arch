@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:list/presentation/provider/task_list_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:list/presentation/bloc/task_bloc.dart';
+import 'package:list/presentation/bloc/task_event.dart';
+import 'package:list/presentation/bloc/task_state.dart';
 import 'package:list/presentation/widgets/task_card.dart';
-import 'package:provider/provider.dart';
 import 'package:common/data/task_repository_impl.dart';
 
 
@@ -30,19 +32,38 @@ class TaskSearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    final taskListProvider = Provider.of<TaskListProvider>(context);
-    final results = taskListProvider.searchTasks(query);
+    // Dispatch search event when user searches for a query
+    context.read<TaskBloc>().add(SearchTasksEvent(query));
 
-    return ListView.builder(
-      itemCount: results.length,
-      itemBuilder: (context, index) {
-        return TaskCard(task: results[index]);
+    return BlocBuilder<TaskBloc, TaskState>(
+      builder: (context, state) {
+        if (state is TaskSearched) {
+          final results = state.searchedTasks;
+
+          if (results.isEmpty) {
+            return Center(child: Text('No tasks found.'));
+          }
+
+          return ListView.builder(
+            itemCount: results.length,
+            itemBuilder: (context, index) {
+              return TaskCard(task: results[index]);
+            },
+          );
+        } else if (state is TaskLoading) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is TaskError) {
+          return Center(child: Text('Error: ${state.message}'));
+        }
+
+        return Center(child: Text('Search for tasks.'));
       },
     );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    // You can add suggestions logic here if needed
     return Container();
   }
 }

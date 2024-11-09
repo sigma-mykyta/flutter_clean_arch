@@ -10,9 +10,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.1.2
   common:
     path: ../common
+  details:
+    path: ../details
+  equatable: ^2.0.5
+  flutter_bloc: ^8.1.6
+  get_it: ^8.0.0
 
 dev_dependencies:
   flutter_test:

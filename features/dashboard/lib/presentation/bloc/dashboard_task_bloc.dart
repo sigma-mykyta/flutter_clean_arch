@@ -4,14 +4,14 @@ import 'package:common/data/task_repository_impl.dart';
 import 'package:common/domain/entities/task.dart';
 import 'package:injectable/injectable.dart';
 
-abstract class TaskEvent extends Equatable {
-  const TaskEvent();
+abstract class DashboardTaskEvent extends Equatable {
+  const DashboardTaskEvent();
   
   @override
   List<Object> get props => [];
 }
 
-class FetchTasksEvent extends TaskEvent {}
+class FetchTasksEvent extends DashboardTaskEvent {}
 
 abstract class TaskState extends Equatable {
   const TaskState();
@@ -42,10 +42,10 @@ class TaskError extends TaskState {
 }
 
 @injectable
-class TaskBloc extends Bloc<TaskEvent, TaskState> {
+class DashboardTaskBloc extends Bloc<DashboardTaskEvent, TaskState> {
   final TaskRepository taskRepository;
 
-  TaskBloc({required this.taskRepository}) : super(TaskInitial()) {
+  DashboardTaskBloc({required this.taskRepository}) : super(TaskInitial()) {
     on<FetchTasksEvent>((event, emit) async {
       emit(TaskLoading());
 

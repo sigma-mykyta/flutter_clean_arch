@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:list/presentation/provider/task_list_provider.dart';
 import 'package:list/presentation/task_list_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:dashboard/presentation/bloc/task_bloc.dart';
+import 'package:dashboard/presentation/bloc/dashboard_task_bloc.dart';
 import 'package:dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:common/data/task_repository_impl.dart';
 import 'injection.dart';
@@ -20,21 +18,13 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiBlocProvider(
       providers: [
-        // Inject TaskRepository via GetIt
-        Provider<TaskRepository>(
-          create: (_) => GetIt.I<TaskRepository>(),
-        ),
-        // BlocProvider for Dashboard feature
-        BlocProvider<TaskBloc>(
-          create: (context) => TaskBloc(
-            taskRepository: context.read<TaskRepository>(),
+        // BlocProvider for managing tasks across the app
+       BlocProvider<DashboardTaskBloc>(
+          create: (context) => DashboardTaskBloc(
+            taskRepository: GetIt.I<TaskRepository>(),
           )..add(FetchTasksEvent()),
-        ),
-        // TaskListProvider now injects TaskRepository using GetIt internally
-        ChangeNotifierProvider<TaskListProvider>(
-          create: (context) => TaskListProvider(), 
         ),
       ],
       child: MaterialApp(
@@ -42,12 +32,11 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: '/',
+        home: DashboardScreen(), 
         routes: {
-          '/': (context) => DashboardScreen(),
           '/task_list': (context) => TaskListScreen(),
         },
-      ),
+      )
     );
   }
 }

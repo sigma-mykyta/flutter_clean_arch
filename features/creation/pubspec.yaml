@@ -9,7 +9,6 @@ environment:
 
 ependencies:
   injectable: ^2.4.4
-  get_it: ^7.7.0
   flutter:
     sdk: flutter
 

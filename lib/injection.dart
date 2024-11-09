@@ -1,5 +1,5 @@
 import 'package:common/data/task_repository_impl.dart';
-import 'package:dashboard/presentation/bloc/task_bloc.dart';
+import 'package:dashboard/presentation/bloc/dashboard_task_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'injection.config.dart';
@@ -13,5 +13,5 @@ void configureDashboardInjection() {
 
 void configureDependencies() {
   getIt.registerLazySingleton<TaskRepository>(() => TaskRepositoryImpl());
-  getIt.registerFactory<TaskBloc>(() => TaskBloc(taskRepository: getIt<TaskRepository>()));
+  getIt.registerFactory<DashboardTaskBloc>(() => DashboardTaskBloc(taskRepository: getIt<TaskRepository>()));
 }

@@ -1,9 +1,11 @@
+import 'package:details/presentation/screens/task_details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:list/presentation/bloc/task_bloc.dart';
+import 'package:list/presentation/bloc/task_event.dart';
+import 'package:list/presentation/bloc/task_state.dart';
 import 'package:list/presentation/search/task_search_delegate.dart';
-import 'package:provider/provider.dart';
-import 'package:common/domain/entities/task.dart';
 import 'widgets/task_card.dart';
-import 'provider/task_list_provider.dart';
 
 class TaskListScreen extends StatelessWidget {
   @override
@@ -20,71 +22,46 @@ class TaskListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<TaskListProvider>(
-        builder: (context, taskListProvider, child) {
-          return FutureBuilder(
-            future: taskListProvider.fetchTasks(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error loading tasks'));
-              }
-              return Column(
-                children: [
-                  // Filter and Sort Controls
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Filter Dropdown
-                        DropdownButton<String>(
-                          value: taskListProvider.selectedFilter,
-                          onChanged: (value) {
-                            taskListProvider.setFilter(value!);
-                          },
-                          items: <String>['All', 'Completed', 'Pending']
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                        // Sort Dropdown
-                        DropdownButton<String>(
-                          value: taskListProvider.selectedSortOption,
-                          onChanged: (value) {
-                            taskListProvider.setSortOption(value!);
-                          },
-                          items: <String>['Due Date', 'Alphabetical']
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Task List
-                  Expanded(
-                    child: taskListProvider.filteredAndSortedTasks.isEmpty
-                        ? Center(child: Text('No tasks available.'))
-                        : ListView.builder(
-                            itemCount: taskListProvider.filteredAndSortedTasks.length,
-                            itemBuilder: (context, index) {
-                              return TaskCard(task: taskListProvider.filteredAndSortedTasks[index]);
-                            },
-                          ),
-                  ),
-                ],
-              );
-            },
-          );
+      body: BlocBuilder<TaskBloc, TaskState>(
+        builder: (context, state) {
+          if (state is TaskLoading) {
+            return Center(child: CircularProgressIndicator()); // Loading state
+          } else if (state is TaskError) {
+            return Center(child: Text('Error loading tasks: ${state.message}')); // Error state
+          } else if (state is TaskLoaded) {
+            // Ensure we have tasks to display
+            final tasks = state.filteredAndSortedTasks;
+            if (tasks.isEmpty) {
+              return Center(child: Text('No tasks available.')); // Empty state
+            }
+            // Display the tasks using ListView.builder
+            return ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                final task = tasks[index];
+                return TaskCard(
+                  task: task,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TaskDetailsScreen(task: task),
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          }
+          return Center(child: Text('Something went wrong.')); // Default fallback
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Trigger task fetching when refresh button is pressed
+          context.read<TaskBloc>().add(FetchTasksEventList());
+        },
+        child: Icon(Icons.refresh),
       ),
     );
   }
